@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "484048731524",
+    "project_id": "agora-641bc",
+    "storage_bucket": "agora-641bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484048731524:android:e380cc1ea94b8fd160b1d1",
+        "android_client_info": {
+          "package_name": "com.example.pdfdemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "484048731524-5o8uv73kr7cfsmipf627k3uesmsqdev4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmIEEei32YNgme2CWN52owS6gL-4q5gik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "484048731524-5o8uv73kr7cfsmipf627k3uesmsqdev4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
