@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
     authInst.signInWithEmailAndPassword(
         email: nameController.text.trim(),
         password: passwordController.text.trim()).then((value) {
-      socketHelper.initSocket();
+
       createdUser = UserModel(
           uid: value.user!.uid, userName: value.user!.email!, deviceToken: "", isOnline: true, caller: '', socketId: socketHelper.socketId
       );

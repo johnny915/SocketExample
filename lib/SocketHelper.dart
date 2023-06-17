@@ -1,3 +1,4 @@
+import 'package:pdfdemo/main.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class SocketHelper {
@@ -18,6 +19,9 @@ class SocketHelper {
 
     socket.onConnect((_) {
       _socketId = socket.id!;
+      if(authInst.currentUser!=null){
+        userRef.doc(createdUser!.uid).update({"socketId":_socketId});
+      }
     });
   }
 

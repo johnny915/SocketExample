@@ -5,20 +5,25 @@ import '../main.dart';
 
 class DioClient {
   final Dio _dio = Dio();
-  final baseUrl = 'http://192.168.1.21:8081/';
+  final baseUrl = 'http://192.168.1.21:8081';
 
 
   Future<String> genToken(String target) async {
+  String token = "";
+   try{
+     Response userData = await _dio.get('$baseUrl/token',queryParameters:{
+       "channel_name":getChanelName(target: target),
+       "uid":0
+     });
 
-    Response userData = await _dio.get('$baseUrl/token',queryParameters:{
-      "channel_name":getChanelName(target: target),
-      "uid":createdUser!.uid
-    });
+     token = userData.data['token'];
+     // Prints the raw data returned by the server
+     print('User Info: ${userData.data}');
+   }catch(e){
+     print(e.toString());
+   }
 
-    // Prints the raw data returned by the server
-    print('User Info: ${userData.data}');
 
-
-    return "";
+    return token;
   }
 }

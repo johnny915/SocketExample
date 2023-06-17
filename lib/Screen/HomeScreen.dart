@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:agora_token_service/agora_token_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pdfdemo/SocketHelper.dart';
 
 import '../Helper.dart';
 import '../Model/UserModel.dart';
@@ -74,12 +75,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () async{
 
 
-                   await client.genToken( users[index].uid);
-                  // String token = createToken(targetUid: users[index].uid, role:RtcRole.publisher);
-                  //
-                  // userRef.doc(users[index].uid).update({"caller": token}).then((value) {
-                  //   Navigator.push(context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: token.split(",")[0], channel: token.split(",")[1], isHost: true,)));
-                  // });
+                  String token = await client.genToken( users[index].uid);
+                  socketHelper.socket.emit('calling', {
+                    "id":users[index].socketId,
+                    "token":token,
+                    "chanel_name":getChanelName(target: users[index].uid)
+                  });
+
+                  Navigator.push(context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: token, channel: getChanelName(target: users[index].uid), isHost: true,)));
                 },
                 icon: const Icon(Icons.call,color: Colors.green,),
               ),

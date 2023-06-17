@@ -30,20 +30,29 @@ late DioClient client;
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
    socketHelper = SocketHelper();
+   socketHelper.initSocket();
    client = DioClient();
 
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
 
-  if(authInst.currentUser!=null){
-    userRef.doc(authInst.currentUser!.uid).snapshots().listen((querySnapshot) {
+  // if(authInst.currentUser!=null){
+  //   userRef.doc(authInst.currentUser!.uid).snapshots().listen((querySnapshot) {
+  //
+  //     String field =querySnapshot.get("caller");
+  //     if(field!=""){
+  //      Navigator.push(navigatorKey.currentState!.context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: field.split(",")[0], channel: field.split(",")[1], isHost: false,)));
+  //     }
+  //   });
+  //
+  // }
+  if(socketHelper.socketId.isNotEmpty){
+    socketHelper.socket.on('incoming_call_event', (data) {
+      print("data from server ");
+      print(data);
+      //Navigator.push(navigatorKey.currentState!.context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: field.split(",")[0], channel: field.split(",")[1], isHost: false,)));
 
-      String field =querySnapshot.get("caller");
-      if(field!=""){
-       Navigator.push(navigatorKey.currentState!.context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: field.split(",")[0], channel: field.split(",")[1], isHost: false,)));
-      }
     });
-
   }
   
   runApp(const MyApp());
@@ -63,7 +72,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 }

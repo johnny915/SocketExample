@@ -2,7 +2,6 @@ const { log } = require('console')
 
 const app = require('express')()
 const http = require('http').createServer(app)
-const AgoraAccessToken = require('agora-access-token');
 
 const {RtcTokenBuilder, RtmTokenBuilder, RtcRole, RtmRole} = require('agora-access-token')
 const agoraAppId = '53d1bde7af10469f858cfafdcb561a57';
@@ -37,6 +36,14 @@ socketio.on("connection", (userSocket) => {
        log(data.id);
 
         socketio.to(data.id).emit('receive_message', data.message);
+    })
+
+    userSocket.on("calling", (data) => {
+       log(data);
+       // userSocket.emit("receive_message", data)
+       log(data.id);
+
+        socketio.to(data.id).emit('incoming_call_event', data);
     })
 
 
