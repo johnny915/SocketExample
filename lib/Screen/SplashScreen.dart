@@ -20,6 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(const Duration(seconds: 2), () async{
       if(authInst.currentUser!= null) {
+        await userRef.doc(authInst.currentUser!.uid).update({"socketId":socketHelper.socketId});
         createdUser =  await getUserFromUid(authInst.currentUser!.uid);
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
       }else{

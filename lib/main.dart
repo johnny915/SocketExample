@@ -29,13 +29,11 @@ late DioClient client;
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-   socketHelper = SocketHelper();
-   socketHelper.initSocket();
-   client = DioClient();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
-
+  socketHelper = SocketHelper();
+  socketHelper.initSocket();
+  client = DioClient();
   // if(authInst.currentUser!=null){
   //   userRef.doc(authInst.currentUser!.uid).snapshots().listen((querySnapshot) {
   //
@@ -46,14 +44,7 @@ void main() async{
   //   });
   //
   // }
-  if(socketHelper.socketId.isNotEmpty){
-    socketHelper.socket.on('incoming_call_event', (data) {
-      print("data from server ");
-      print(data);
-      //Navigator.push(navigatorKey.currentState!.context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: field.split(",")[0], channel: field.split(",")[1], isHost: false,)));
 
-    });
-  }
   
   runApp(const MyApp());
 }
@@ -76,4 +67,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
 

@@ -30,6 +30,11 @@ class _CallingScreenState extends State<CallingScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero,()async{
+      try{
+
+      }catch(e){
+        print(e.toString());
+      }
       await initAgora();
     });
   }
@@ -71,8 +76,9 @@ class _CallingScreenState extends State<CallingScreen> {
       );
 
 
-      await _engine!.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+      await _engine!.setClientRole(role: widget.isHost ? ClientRoleType.clientRoleBroadcaster : ClientRoleType.clientRoleAudience);
       await _engine!.enableVideo();
+
 
       await _engine!
           .joinChannel(
@@ -195,7 +201,7 @@ class _CallingScreenState extends State<CallingScreen> {
         controller: VideoViewController.remote(
           rtcEngine: _engine!,
           canvas: VideoCanvas(uid: _remoteUid),
-          connection:  const RtcConnection(channelId: "test"),
+          connection:   RtcConnection(channelId: widget.channel),
         ),
       );
     } else {
