@@ -19,12 +19,14 @@ class _CallingScreenState extends State<CallingScreen> {
   RtcEngine? _engine;
 
 
-  @override
-  void dispose() {
-    super.dispose();
-    _engine!.leaveChannel();
-    _engine!.release(sync: true);
-  }
+  // @override
+  // void dispose() async{
+  //   super.dispose();
+  //   await _engine!.leaveChannel();
+  //   await _engine!.release(sync: true).then((value) {
+  //   Navigator.pop(context);
+  //   });
+  // }
 
   @override
   void initState() {
@@ -47,7 +49,7 @@ class _CallingScreenState extends State<CallingScreen> {
     _engine = createAgoraRtcEngine();
     _engine!.initialize( const RtcEngineContext(
       appId: appId,
-      channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+      channelProfile: ChannelProfileType.channelProfileCommunication,
     ))
         .then((value) async{
       _engine!.registerEventHandler(
@@ -76,7 +78,7 @@ class _CallingScreenState extends State<CallingScreen> {
       );
 
 
-      await _engine!.setClientRole(role: widget.isHost ? ClientRoleType.clientRoleBroadcaster : ClientRoleType.clientRoleAudience);
+     await _engine!.setClientRole(role:ClientRoleType.clientRoleBroadcaster );
       await _engine!.enableVideo();
 
 
@@ -162,10 +164,11 @@ class _CallingScreenState extends State<CallingScreen> {
                         //more than 50% of width makes circle
                       ),
                       child: IconButton(
-                        onPressed: (){
-                          _engine!.leaveChannel();
-                          _engine!.release(sync: true);
-                          Navigator.pop(context);
+                        onPressed: ()async {
+                          await _engine!.leaveChannel();
+                          await _engine!.release(sync: true).then((value) {
+                            Navigator.pop(context);
+                          });
                         },
                         icon: const Icon(Icons.call_end_outlined,color: Colors.white,),
                       ),

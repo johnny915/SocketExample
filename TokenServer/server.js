@@ -17,10 +17,11 @@ const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds
 
 app.get('/', (req, res) => {
     res.send("Node Server is running. Yay!!")
+    log("server strated");
 })
 
 app.get('/token', (req, res) => {
-  const token = RtcTokenBuilder.buildTokenWithUid(agoraAppId, agoraAppCertificate, req.query.channel_name, req.query.uid, RtcRole.PUBLISHER, privilegeExpiredTs);
+  const token = RtcTokenBuilder.buildTokenWithUid(agoraAppId, agoraAppCertificate, req.query.channel_name,0, RtcRole.PUBLISHER, privilegeExpiredTs);
 
   res.json({ token: token });
 });
@@ -29,6 +30,7 @@ app.get('/token', (req, res) => {
 const socketio = require('socket.io')(http)
 
 socketio.on("connection", (userSocket) => {
+  log(userSocket.id+" is connected "+" on "+new Date().toLocaleString());
 
     userSocket.on("send_message", (data) => {
        log(data);
@@ -46,10 +48,9 @@ socketio.on("connection", (userSocket) => {
         socketio.to(data.id).emit('incoming_call_event', data);
     })
 
+    userSocket.on('disconnect', () => {
 
-
-    userSocket.on('disconnect', (user) => {
-      console.log(user.id+' is disconnected');
+      console.log(userSocket.id+' is disconnected'+" on "+new Date().toLocaleString());
     });
 })
 
