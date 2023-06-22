@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pdfdemo/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Helper.dart';
 import 'HomeScreen.dart';
@@ -18,9 +19,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), () async{
-      if(authInst.currentUser!= null) {
-        await userRef.doc(authInst.currentUser!.uid).update({"socketId":socketHelper.socketId});
+    Timer(const Duration(seconds: 1), () async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      String id =  prefs.getString('socket_id') ?? '';
+      if(authInst.currentUser!= null  && id.isNotEmpty) {
+        await userRef.doc(authInst.currentUser!.uid).update({"socketId":id});
         createdUser =  await getUserFromUid(authInst.currentUser!.uid);
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
       }else{

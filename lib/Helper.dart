@@ -46,6 +46,7 @@ String createToken({required String targetUid,required RtcRole role}){
 logout() async {
   await authInst.signOut();
   createdUser = null;
+ // service.invoke("stopService");
   Navigator.of(navigatorKey.currentContext!).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const SplashScreen()),
           (Route<dynamic> route) => false);

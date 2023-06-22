@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pdfdemo/Screen/HomeScreen.dart';
 import 'package:pdfdemo/Screen/SignUp.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Model/UserModel.dart';
 import '../main.dart';
@@ -13,8 +14,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController nameController = TextEditingController(text: "kasim@gmail.com");
+  TextEditingController passwordController = TextEditingController(text: "123456");
 
   @override
   Widget build(BuildContext context) {
@@ -94,20 +95,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
 
-  void login(){
+  void login()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      String id =  prefs.getString('socket_id') ?? '';
+
     authInst.signInWithEmailAndPassword(
         email: nameController.text.trim(),
         password: passwordController.text.trim()).then((value) {
 
       createdUser = UserModel(
-          uid: value.user!.uid, userName: value.user!.email!, deviceToken: "", isOnline: true, caller: '', socketId: socketHelper.socketId
+          uid: value.user!.uid, userName: value.user!.email!, deviceToken: "", isOnline: true, caller: '', socketId: id
       );
       messaging.getToken().then((value) {
         if(value!=null){
           createdUser!.deviceToken = value;
           userRef.doc(createdUser!.uid).set(createdUser!.toJson()).then((value) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Logged in Successfully")));
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Logged in Successfully")));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+
           });
         }else{
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("error in getting device token")));
@@ -119,4 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
     });
   }
+
+
 }
+

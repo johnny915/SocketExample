@@ -45,6 +45,11 @@ dependencies:
   permission_handler: ^10.2.0
   socket_io_client: ^2.0.2
   dio: ^5.2.1+1
+  flutter_local_notifications: ^14.1.1
+  flutter_background_service: ^3.0.1
+  shared_preferences: ^2.1.2
+
+
 
 
 
