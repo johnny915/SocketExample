@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
                   String token = await client.genToken( users[index].uid);
-                  socketHelper.socket.emit('calling', {
+                  SocketHelper().socket!.emit('calling', {
                     "id":users[index].socketId,
                     "token":token,
                     "chanel_name":getChanelName(target: users[index].uid)

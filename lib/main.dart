@@ -9,13 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:pdfdemo/Screen/ApiClient.dart';
 import 'package:pdfdemo/SocketHelper.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Model/UserModel.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'Screen/HomeScreen.dart';
 import 'Screen/LoginScreen.dart';
+import 'Screen/NotificationService.dart';
 import 'Screen/SignUp.dart';
-import 'Screen/SocketTesting.dart';
 import 'Screen/SplashScreen.dart';
 import 'firebase_options.dart';
 
@@ -27,18 +29,23 @@ final service = FlutterBackgroundService();
 String socketId= "";
 const appId = "53d1bde7af10469f858cfafdcb561a57";
 const appCertificate = "e0acdc5d4cec48f28ea17fb702ddeada";
-
+NotificationService notificationService = NotificationService();
 UserModel? createdUser;
-SocketHelper socketHelper = SocketHelper();
 late DioClient client;
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform).then((value) {
+
+  await notificationService.init();
+  await notificationService.requestIOSPermissions();
+  await notificationService.cancelAllNotifications();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform).then((value) async{
+    await Permission.scheduleExactAlarm.request();
     initializeService().whenComplete(() {
         service.startService();
     });
   });
+
   client = DioClient();
 
 
@@ -83,15 +90,14 @@ Future<void> initializeService() async {
 
   await service.configure(
     androidConfiguration: AndroidConfiguration(
+
       // this will be executed when app is in foreground or background in separated isolate
       onStart: onStart,
-
       // auto start service
       autoStart: true,
       isForegroundMode: true,
-      initialNotificationTitle: 'AWESOME SERVICE',
-      initialNotificationContent: 'Initializing',
       foregroundServiceNotificationId: 888,
+      autoStartOnBoot: true
     ),
     iosConfiguration: IosConfiguration(
       // auto start service
@@ -117,22 +123,28 @@ Future<bool> onIosBackground(ServiceInstance service) async {
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
-  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
 
   if (service is AndroidServiceInstance) {
     service.on('setAsForeground').listen((event) {
       service.setAsForegroundService();
+      print('setAsForeground');
     });
 
     service.on('setAsBackground').listen((event) {
       service.setAsBackgroundService();
+      print('setAsBackground');
     });
   }
 
   service.on('stopService').listen((event) {
     service.stopSelf();
   });
-    socketHelper.initSocket();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  String id =  prefs.getString('socket_id') ?? '';
+    SocketHelper().initSocket(id);
+
   // bring to foreground
   // Timer.periodic(const Duration(seconds: 1), (timer) async {
   //   if (service is AndroidServiceInstance) {
