@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:pdfdemo/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -20,14 +22,12 @@ class SocketHelper {
 
    Socket? socket;
 
-  void initSocket(String predefinedID){
+  void initSocket(){
 
     notificationService.showNotification(888, "Test","Connecting to server","");
-      socket = io('http://192.168.1.21:8081',
+      socket = io('http://172.19.48.1:8081/',
         OptionBuilder()
-            .setTransports(['websocket']).setQuery( <String, dynamic>{
-          'query': 'socket_id=$predefinedID', // Pass the ID as a query parameter
-        })
+            .setTransports(['websocket'])
             .disableAutoConnect()
             .build()
     );
@@ -46,15 +46,12 @@ class SocketHelper {
           notificationService.showNotification(888, "Test","Failed $e","");
         }
 
-        socket!.on('incoming_call_event', (data) {
-          Navigator.push(navigatorKey.currentState!.context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: data['token'], channel: data['chanel_name'], isHost: false,)));
-        });
-
       });
 
       socket!.onConnectError((data) {
         notificationService.showNotification(888, "Test","Failed  to connect server","");
         print(data);
+        initSocket();
       });
 
 

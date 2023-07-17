@@ -75,14 +75,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () async{
 
 
-                  String token = await client.genToken( users[index].uid);
-                  SocketHelper().socket!.emit('calling', {
-                    "id":users[index].socketId,
-                    "token":token,
-                    "chanel_name":getChanelName(target: users[index].uid)
-                  });
+                   client.genToken( users[index].uid).then((value) {
+                     service.invoke(
+                       'make_call',
+                       {
+                         "id":users[index].socketId,
+                         "token":value,
+                         "chanel_name":getChanelName(target: users[index].uid)
+                       },
+                     );
+                   });
 
-                  Navigator.push(context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: token, channel: getChanelName(target: users[index].uid), isHost: true,)));
+
+                  // SocketHelper().socket!.emit('calling', {
+                  //   "id":users[index].socketId,
+                  //   "token":token,
+                  //   "chanel_name":getChanelName(target: users[index].uid)
+                  // });
+                  //
+                  // Navigator.push(context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: token, channel: getChanelName(target: users[index].uid), isHost: true,)));
                 },
                 icon: const Icon(Icons.call,color: Colors.green,),
               ),

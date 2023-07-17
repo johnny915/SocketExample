@@ -5,8 +5,7 @@ import '../main.dart';
 
 class DioClient {
   final Dio _dio = Dio();
-  final baseUrl = 'http://192.168.1.21:8081';
-
+  final baseUrl = 'http://172.19.48.1:8081';
 
   Future<String> genToken(String target) async {
   String token = "";

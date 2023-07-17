@@ -7,13 +7,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:pdfdemo/Screen/ApiClient.dart';
 import 'package:pdfdemo/SocketHelper.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Helper.dart';
 import 'Model/UserModel.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
+import 'Screen/CallingScreen.dart';
 import 'Screen/HomeScreen.dart';
 import 'Screen/LoginScreen.dart';
 import 'Screen/NotificationService.dart';
@@ -66,14 +71,11 @@ void main() async{
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+
+    return GetMaterialApp(
       title: 'Flutter Demo',
-      navigatorKey: navigatorKey,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -140,10 +142,25 @@ void onStart(ServiceInstance service) async {
   service.on('stopService').listen((event) {
     service.stopSelf();
   });
-  SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  String id =  prefs.getString('socket_id') ?? '';
-    SocketHelper().initSocket(id);
+    SocketHelper().initSocket();
+
+  // SocketHelper().socket!.on('incoming_call_event', (data) {
+  //   Navigator.push(navigatorKey.currentState!.context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: data['token'], channel: data['chanel_name'], isHost: false,)));
+  // });
+
+    service.on('make_call').listen((event) {
+      print("event");
+      print(event);
+      SocketHelper().socket!.emit('calling',event);
+      Get.to(CallingScreen( token: event!["token"], channel: event["chanel_name"], isHost: true,));
+
+    });
+
+  SocketHelper().socket!.on('incoming_call_event', (data) {
+    Get.to(CallingScreen( token: data['token'], channel: data['chanel_name'], isHost: false,));
+    // Navigator.push(navigatorKey.currentContext!, MaterialPageRoute(builder: (_) =>  CallingScreen( token: data['token'], channel: data['chanel_name'], isHost: false,)));
+  });
 
   // bring to foreground
   // Timer.periodic(const Duration(seconds: 1), (timer) async {
@@ -161,12 +178,5 @@ void onStart(ServiceInstance service) async {
   //   /// you can see this log in logcat
   //   print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()} ${socketHelper.socketId}');
   //
-  //   service.invoke(
-  //     'update',
-  //     {
-  //       "current_date": DateTime.now().toIso8601String(),
-  //       "device": "",
-  //     },
-  //   );
   // });
 }
