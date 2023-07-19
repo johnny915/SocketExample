@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -145,38 +146,15 @@ void onStart(ServiceInstance service) async {
 
     SocketHelper().initSocket();
 
-  // SocketHelper().socket!.on('incoming_call_event', (data) {
-  //   Navigator.push(navigatorKey.currentState!.context, MaterialPageRoute(builder: (context) =>  CallingScreen( token: data['token'], channel: data['chanel_name'], isHost: false,)));
-  // });
 
     service.on('make_call').listen((event) {
-      print("event");
-      print(event);
       SocketHelper().socket!.emit('calling',event);
-      Get.to(CallingScreen( token: event!["token"], channel: event["chanel_name"], isHost: true,));
-
+      service.invoke("HomeScreen_Callback",event);
     });
 
+
   SocketHelper().socket!.on('incoming_call_event', (data) {
-    Get.to(CallingScreen( token: data['token'], channel: data['chanel_name'], isHost: false,));
+    notificationService.showNotification(444, "Incoming Call","test",jsonEncode(data));
     // Navigator.push(navigatorKey.currentContext!, MaterialPageRoute(builder: (_) =>  CallingScreen( token: data['token'], channel: data['chanel_name'], isHost: false,)));
   });
-
-  // bring to foreground
-  // Timer.periodic(const Duration(seconds: 1), (timer) async {
-  //   if (service is AndroidServiceInstance) {
-  //     if (await service.isForegroundService()) {
-  //       // if you don't using custom notification, uncomment this
-  //       service.setForegroundNotificationInfo(
-  //         title: "My App Service",
-  //         content: "Updated at ${DateTime.now()}",
-  //       );
-  //     }
-  //   }
-  //
-  //
-  //   /// you can see this log in logcat
-  //   print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()} ${socketHelper.socketId}');
-  //
-  // });
 }

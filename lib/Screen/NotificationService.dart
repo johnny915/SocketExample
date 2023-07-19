@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -127,5 +129,7 @@ class NotificationService {
 }
 
 Future<void> onSelectNotification(String? payload) async {
-
+   if(payload!=null && payload!=""){
+     print("Notification payload ${jsonDecode(payload)}");
+   }
 }

@@ -20,7 +20,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+ @override
+  void initState() {
+    super.initState();
+    service.on('HomeScreen_Callback').listen((event) {
+      print(event);
 
+      // Get.to(CallingScreen( token: event!["token"], channel: event["chanel_name"], isHost: true,));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

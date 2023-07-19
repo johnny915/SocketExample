@@ -25,7 +25,7 @@ class SocketHelper {
   void initSocket(){
 
     notificationService.showNotification(888, "Test","Connecting to server","");
-      socket = io('http://172.19.48.1:8081/',
+      socket = io('http://192.168.1.119:8081',
         OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()
