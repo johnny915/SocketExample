@@ -2,11 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../Helper.dart';
 import '../main.dart';
+import 'CallingScreen.dart';
+import 'HomeScreen.dart';
+import 'LoginScreen.dart';
 
 class NotificationService {
   static final NotificationService _notificationService =
@@ -67,6 +73,9 @@ class NotificationService {
           onSelectNotification(response.payload);
         }
       },
+
+
+
       // onDidReceiveBackgroundNotificationResponse: (NotificationResponse response){
       //   if(response.payload!=null){
       //     onSelectNotification(response.payload);
@@ -126,10 +135,37 @@ class NotificationService {
   Future<void> cancelAllNotifications() async {
     await flutterLocalNotificationsPlugin.cancelAll();
   }
+
+  Future<void>  launchApp() async {
+    final NotificationAppLaunchDetails? notificationAppLaunchDetails = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+    final notificationPayload = notificationAppLaunchDetails!.notificationResponse?.payload!;
+
+
+
+    if(authInst.currentUser!= null ) {
+      createdUser =  await getUserFromUid(authInst.currentUser!.uid);
+      if(notificationPayload!=null){
+        Map<String,dynamic> data = jsonDecode(notificationPayload);
+        Get.to(CallingScreen( token: data['token'], channel: data['chanel_name'], isHost: false,));
+      }else{
+        Get.to(const HomeScreen());
+      }
+
+    }else{
+      Get.to(const LoginScreen());
+    }
+
+  }
 }
+
+
 
 Future<void> onSelectNotification(String? payload) async {
    if(payload!=null && payload!=""){
      print("Notification payload ${jsonDecode(payload)}");
+     Map<String,dynamic> data = jsonDecode(payload);
+     Get.to(CallingScreen( token: data['token'], channel: data['chanel_name'], isHost: false,));
+    // Navigator.push(navigatorKey.currentContext!, MaterialPageRoute(builder: (_) =>  CallingScreen( token: data['token'], channel: data['chanel_name'], isHost: false,)));
    }
 }

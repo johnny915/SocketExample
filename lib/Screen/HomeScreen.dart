@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:agora_token_service/agora_token_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:pdfdemo/SocketHelper.dart';
 
 import '../Helper.dart';
@@ -24,9 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     service.on('HomeScreen_Callback').listen((event) {
-      print(event);
-
-      // Get.to(CallingScreen( token: event!["token"], channel: event["chanel_name"], isHost: true,));
+      Get.to(CallingScreen( token: event!["token"], channel: event["chanel_name"], isHost: true,));
     });
   }
 

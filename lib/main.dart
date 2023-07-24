@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -47,9 +48,10 @@ void main() async{
   await notificationService.cancelAllNotifications();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform).then((value) async{
     await Permission.scheduleExactAlarm.request();
-    initializeService().whenComplete(() {
+    initializeService().whenComplete(() async{
         service.startService();
     });
+
   });
 
   client = DioClient();
@@ -81,7 +83,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
+      home: const SplashScreen()
     );
   }
 }

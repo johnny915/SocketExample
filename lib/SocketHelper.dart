@@ -34,8 +34,6 @@ class SocketHelper {
       socket!.on('connect', (_) async{
         await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
         try{
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('socket_id', socket!.id!);
           if(FirebaseAuth.instance.currentUser!=null){
             userRef.doc(authInst.currentUser!.uid).update({"socketId":socket!.id!}).then((value) {
               notificationService.showNotification(888, "Test","Token added to firebase","");
